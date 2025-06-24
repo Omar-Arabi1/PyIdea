@@ -1,6 +1,6 @@
 from json import dump, load
 import typer
-from colorama import Fore, init
+from colorama import Fore, init, Back
 import os
 import pathlib
 
@@ -85,6 +85,24 @@ def add_idea(sub_folder: str, idea: str, link: str = ""):
         ideas_json.update({ sub_folder.upper(): { idea: link } })
 
     write_json(ideas_json)
+
+@app.command()
+def list_sub_folders():
+    ideas_json: dict = read_json()
+    sub_folders = list(ideas_json.keys())     
+    
+    for sub_folder in sub_folders:
+        check_if_exists(sub_folder, ideas_json) 
+        ideas = list(ideas_json[sub_folder].keys()) 
+        print(Fore.BLACK + sub_folder + ":") 
+        for index, idea in enumerate(ideas):
+            # we are getting the values (links) for each sub-folder and checking if its empty if it is 
+            # we print something else other than it
+            if list(ideas_json[sub_folder].values())[index] != "":
+                print(Fore.GREEN + f" {Fore.BLUE + ">>> " + str(index + 1)} - {Fore.GREEN + idea} - {Fore.CYAN + "link: " + list(ideas_json[sub_folder].values())[index]}")
+            else:
+                print(Fore.GREEN + f" {Fore.BLUE + ">>> " + str(index + 1)} - {Fore.GREEN + idea} - {Fore.CYAN + "link: wasn't provided"}")
+
 
 # run the file as a python binary not as typer's
 if __name__ == "__main__":
