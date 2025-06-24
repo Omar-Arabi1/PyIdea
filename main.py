@@ -1,6 +1,8 @@
 from json import dump, load
 import typer
 from colorama import Fore, init
+import os
+import pathlib
 
 init()
 
@@ -32,7 +34,13 @@ def write_json(dict_to_json):
     with open("Data/idea.json", mode="w", encoding="utf-8") as write_file:
         return dump(dict_to_json, write_file, indent=4)
 
-@app.command()
+"""
+TODO: 
+1. fix not being able to add new folders bug ✅
+2. error handling for the entered link (exists as a file, is a markdown file) ✅
+"""
+    
+@app.command() 
 def add_idea(sub_folder: str, idea: str, link: str = ""):
     ideas_json: dict = read_json()
 
@@ -48,8 +56,22 @@ def add_idea(sub_folder: str, idea: str, link: str = ""):
             if sub_folder.upper() == folder and idea in ideas_json[folder].keys() or link in ideas_json[folder].values():
                 print(Fore.RED + "idea/link already exists dumbass")
                 return
-    
-    ideas_json[sub_folder.upper()].update({ idea: link }) # we make the sub-folder uppercase don't ask me why its fun
+
+    if not os.path.isfile(link):
+        print(Fore.RED + f"{link} doesn't exist or is a directory")
+        return 
+    elif  pathlib.Path(link).suffix != ".md":
+        print(Fore.RED + f"{link} must be in markdown")
+        return 
+    elif len(ideas_json.keys()) != 0 and sub_folder in ideas_json.keys():
+        for l in ideas_json[sub_folder.upper()].values():
+            if not os.path.isfile(l) and l != "":
+                print(Fore.RED + f"{link} got deleted or something unknown so it got removed")
+
+    if sub_folder.upper() in ideas_json.keys():
+        ideas_json[sub_folder.upper()].update({ idea: link }) # we make the sub-folder uppercase don't ask me why its fun
+    else:
+        ideas_json.update({ sub_folder.upper(): { idea: link } })
     write_json(ideas_json)
 
 if __name__ == "__main__":
