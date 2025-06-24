@@ -33,6 +33,15 @@ def read_json():
 def write_json(dict_to_json):
     with open("Data/idea.json", mode="w", encoding="utf-8") as write_file:
         return dump(dict_to_json, write_file, indent=4)
+    
+def check_if_exists(s_folder: str, idea_json: dict):
+    if len(idea_json.keys()) != 0 and s_folder.upper() in idea_json.keys():
+        keys = list(idea_json[s_folder.upper()].keys())
+        for i, l in enumerate(idea_json[s_folder.upper()].values()):
+            if not os.path.isfile(l) and l != "":
+                print(Fore.RED + f"{l} got deleted or changed its absolute so it got removed")
+                idea_json[s_folder.upper()][keys[i]] = ""
+                write_json(idea_json)
 
 """
 TODO: 
@@ -43,6 +52,7 @@ TODO:
 @app.command() 
 def add_idea(sub_folder: str, idea: str, link: str = ""):
     ideas_json: dict = read_json()
+    check_if_exists(sub_folder, ideas_json)
 
     # by splitting the values on whitespace doesn't allow the user to enter a bunch of spaces 
     # which would work if we compared it to an empty string since a whitespace spammed one isn't considered empty
@@ -53,20 +63,16 @@ def add_idea(sub_folder: str, idea: str, link: str = ""):
         for folder in ideas_json.keys():
             # checking if the idea exists withing the sub-folder the is selected by comparing the subfolder and checking if its value
             # exists withing the sub-folder the same for the link
-            if sub_folder.upper() == folder and idea in ideas_json[folder].keys() or link in ideas_json[folder].values():
+            if sub_folder.upper() == folder and idea in ideas_json[folder].keys() or link in ideas_json[folder].values() and link != "":
                 print(Fore.RED + "idea/link already exists dumbass")
                 return
 
-    if not os.path.isfile(link):
+    if not os.path.isfile(link) and link != "":
         print(Fore.RED + f"{link} doesn't exist or is a directory")
         return 
-    elif  pathlib.Path(link).suffix != ".md":
+    elif  pathlib.Path(link).suffix != ".md" and link != "":
         print(Fore.RED + f"{link} must be in markdown")
         return 
-    elif len(ideas_json.keys()) != 0 and sub_folder in ideas_json.keys():
-        for l in ideas_json[sub_folder.upper()].values():
-            if not os.path.isfile(l) and l != "":
-                print(Fore.RED + f"{link} got deleted or something unknown so it got removed")
 
     if sub_folder.upper() in ideas_json.keys():
         ideas_json[sub_folder.upper()].update({ idea: link }) # we make the sub-folder uppercase don't ask me why its fun
