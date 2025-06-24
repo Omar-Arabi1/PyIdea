@@ -1,6 +1,6 @@
 from json import dump, load
 import typer
-from colorama import Fore, init, Back
+from colorama import Fore, init
 import os
 import pathlib
 
@@ -46,12 +46,6 @@ def check_if_exists(s_folder: str, idea_json: dict):
                 idea_json[s_folder.upper()][keys[i]] = "" 
                 write_json(idea_json)
 
-"""
-TODO: 
-1. fix not being able to add new folders bug ✅
-2. error handling for the entered link (exists as a file, is a markdown file) ✅
-"""
-    
 @app.command() 
 def add_idea(sub_folder: str, idea: str, link: str = ""):
     ideas_json: dict = read_json()
@@ -102,7 +96,6 @@ def list_sub_folders():
                 print(Fore.GREEN + f" {Fore.BLUE + ">>> " + str(index + 1)} - {Fore.GREEN + idea} - {Fore.CYAN + "link: " + list(ideas_json[sub_folder].values())[index]}")
             else:
                 print(Fore.GREEN + f" {Fore.BLUE + ">>> " + str(index + 1)} - {Fore.GREEN + idea} - {Fore.CYAN + "link: wasn't provided"}")
-
 
 # run the file as a python binary not as typer's
 if __name__ == "__main__":
