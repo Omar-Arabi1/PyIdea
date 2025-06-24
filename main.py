@@ -14,7 +14,7 @@ Date: 24 June 2025
 Description:
 this cli tool allows you to save ideas in "folders" so to speak you save headers to these
 ideas and link full markdown files for more detail on them for example 
-GoProject:
+GoProjects:
     project: create a CLI tools
     link: /home/omar-arabi/obsidian/CLIGo.md
 """
@@ -36,17 +36,20 @@ def write_json(dict_to_json):
 def add_idea(sub_folder: str, idea: str, link: str = ""):
     ideas_json: dict = read_json()
 
-    if len(idea.split()) == 0 or len(sub_folder.split) == 0:
+    # by splitting the values on whitespace doesn't allow the user to enter a bunch of spaces 
+    # which would work if we compared it to an empty string since a whitespace spammed one isn't considered empty
+    if len(idea.split()) == 0 or len(sub_folder.split()) == 0:
         print(Fore.RED + "The idea or sub-folder is empty dumbass")
         return
     else:
         for folder in ideas_json.keys():
-            if sub_folder == folder and ideas_json.get(folder) == idea:
-                print(Fore.RED + "The idea is already exists dumbass")
+            # checking if the idea exists withing the sub-folder the is selected by comparing the subfolder and checking if its value
+            # exists withing the sub-folder the same for the link
+            if sub_folder.upper() == folder and idea in ideas_json[folder].keys() or link in ideas_json[folder].values():
+                print(Fore.RED + "idea/link already exists dumbass")
                 return
-
-    ideas_json.update({ sub_folder.upper(): idea })
     
+    ideas_json[sub_folder.upper()].update({ idea: link }) # we make the sub-folder uppercase don't ask me why its fun
     write_json(ideas_json)
 
 if __name__ == "__main__":
