@@ -54,14 +54,14 @@ def add_idea(label: str, idea: str, link: str = ""):
     # by splitting the values on whitespace doesn't allow the user to enter a bunch of spaces 
     # which would work if we compared it to an empty string since a whitespace spammed one isn't considered empty
     if len(idea.split()) == 0 or len(label.split()) == 0:
-        print(Fore.RED + "The idea or sub-folder is empty dumbass")
+        print(Fore.RED + "The idea or sub-folder is empty")
         return
     else:
         for folder in ideas_json.keys():
             # checking if the idea exists withing the sub-folder the is selected by comparing the subfolder and checking if its value
             # exists withing the sub-folder the same for the link
             if label.upper() == folder and idea in ideas_json[folder].keys() or link in ideas_json[folder].values() and link != "":
-                print(Fore.RED + "idea/link already exists dumbass")
+                print(Fore.RED + "idea/link already exists")
                 return
 
     # we chceck if its a file and if it is a markdown file
