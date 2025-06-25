@@ -47,20 +47,20 @@ def check_if_exists(s_folder: str, idea_json: dict):
                 write_json(idea_json)
 
 @app.command() 
-def add_idea(sub_folder: str, idea: str, link: str = ""):
+def add_idea(label: str, idea: str, link: str = ""):
     ideas_json: dict = read_json()
-    check_if_exists(sub_folder, ideas_json) # we always run this to always check for if links are missed
+    check_if_exists(label, ideas_json) # we always run this to always check for if links are missed
 
     # by splitting the values on whitespace doesn't allow the user to enter a bunch of spaces 
     # which would work if we compared it to an empty string since a whitespace spammed one isn't considered empty
-    if len(idea.split()) == 0 or len(sub_folder.split()) == 0:
+    if len(idea.split()) == 0 or len(label.split()) == 0:
         print(Fore.RED + "The idea or sub-folder is empty dumbass")
         return
     else:
         for folder in ideas_json.keys():
             # checking if the idea exists withing the sub-folder the is selected by comparing the subfolder and checking if its value
             # exists withing the sub-folder the same for the link
-            if sub_folder.upper() == folder and idea in ideas_json[folder].keys() or link in ideas_json[folder].values() and link != "":
+            if label.upper() == folder and idea in ideas_json[folder].keys() or link in ideas_json[folder].values() and link != "":
                 print(Fore.RED + "idea/link already exists dumbass")
                 return
 
@@ -73,52 +73,52 @@ def add_idea(sub_folder: str, idea: str, link: str = ""):
         return 
 
     # if there is a sub-folder and the user chose it we update it if not we create it
-    if sub_folder.upper() in ideas_json.keys():
-        ideas_json[sub_folder.upper()].update({ idea: link }) # we make the sub-folder uppercase don't ask me why its fun
+    if label.upper() in ideas_json.keys():
+        ideas_json[label.upper()].update({ idea: link }) # we make the sub-folder uppercase don't ask me why its fun
         print(Fore.GREEN + "the idea was added")
     else:
-        ideas_json.update({ sub_folder.upper(): { idea: link } })
+        ideas_json.update({ label.upper(): { idea: link } })
         print(Fore.GREEN + "the idea and the sub-folder were added")
 
     write_json(ideas_json)
 
 @app.command()
-def list_sub_folders():
+def list_labels():
     ideas_json: dict = read_json()
-    sub_folders = list(ideas_json.keys())     
+    labels = list(ideas_json.keys())     
     
-    for sub_folder in sub_folders:
-        check_if_exists(sub_folder, ideas_json) 
-        ideas = list(ideas_json[sub_folder].keys()) 
-        print(Fore.BLACK + sub_folder + ":") 
+    for label in labels:
+        check_if_exists(label, ideas_json) 
+        ideas = list(ideas_json[label].keys()) 
+        print(Fore.BLACK + label + ":") 
         for index, idea in enumerate(ideas):
             # we are getting the values (links) for each sub-folder and checking if its empty if it is 
             # we print something else other than it
-            if list(ideas_json[sub_folder].values())[index] != "":
-                print(Fore.GREEN + f" {Fore.BLUE + ">>> " + str(index + 1)} - {Fore.GREEN + idea} - {Fore.CYAN + "link: " + list(ideas_json[sub_folder].values())[index]}")
+            if list(ideas_json[label].values())[index] != "":
+                print(Fore.GREEN + f" {Fore.BLUE + ">>> " + str(index + 1)} - {Fore.GREEN + idea} - {Fore.CYAN + "link: " + list(ideas_json[label].values())[index]}")
             else:
                 print(Fore.GREEN + f" {Fore.BLUE + ">>> " + str(index + 1)} - {Fore.GREEN + idea} - {Fore.CYAN + "link: wasn't provided"}")
 
 @app.command()
-def remove_idea(sub_folder_name: str, idea_index: int):
+def remove_idea(label_name: str, idea_index: int):
     ideas_json: dict = read_json()
-    sub_folders = list(ideas_json.keys())
+    labels = list(ideas_json.keys())
 
-    for sub_folder in sub_folders:
-        check_if_exists(sub_folder, ideas_json)
+    for label in labels:
+        check_if_exists(label, ideas_json)
     
     # for each folder we take its keys (ideas)
-    for sub_folder in sub_folders:
-        ideas = list(ideas_json[sub_folder].keys())
-        if sub_folder_name.upper() == sub_folder:
+    for label in labels:
+        ideas = list(ideas_json[label].keys())
+        if label_name.upper() == label:
             for index, idea in enumerate(ideas):
                 if idea_index - 1 == index: # we subract one because the value entered will be one indexed
                     print(Fore.GREEN + f"{idea} is removed")
-                    ideas_json[sub_folder].pop(idea)
+                    ideas_json[label].pop(idea)
                     # we check if there is no ideas left then we will remove the sub-folder because it is empty
-                    if len(list(ideas_json[sub_folder].keys())) == 0: 
-                        print(Fore.GREEN + f"{sub_folder} is removed")
-                        ideas_json.pop(sub_folder)
+                    if len(list(ideas_json[label].keys())) == 0: 
+                        print(Fore.GREEN + f"{label} is removed")
+                        ideas_json.pop(label)
                         
                     write_json(ideas_json)
                     return
@@ -128,11 +128,23 @@ def remove_idea(sub_folder_name: str, idea_index: int):
                     continue
 
             print(Fore.RED + "the index you entered doesn't exist")
-            return
-            
+            return    
     print(Fore.RED + "the folder name you entered doesn't exist")
     return
-        
+
+@app.command()
+def remove_label(label_name: str):
+    ideas_json = read_json()
+    labels = ideas_json.keys()
+
+    for label in labels:
+        if label_name.upper() == label:
+            print(Fore.GREEN + f"removed {label}")
+            ideas_json.pop(label)
+            write_json(ideas_json)
+            return
+    
+    print(Fore.RED + "the label doesn't exist")
 
 # run the file as a python binary not as typer's
 if __name__ == "__main__":
