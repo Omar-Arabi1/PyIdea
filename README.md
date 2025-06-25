@@ -79,7 +79,7 @@ follow these steps to install this
 - create a Pyidea directory and copy and past the Data directory and the file inside of it inside the newly
 created directory and also add the binary created to the directory without adding the dist directory made by
 pyinstaller
-- add this `export PATH=$PATH:/usr/local/bin/Pyidea`
+- add this `export PATH=$PATH:/usr/local/bin/Pyidea` to your ~/.bashrc file
 - run `source ~/.bashrc`
 
 ---
