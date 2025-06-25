@@ -25,12 +25,12 @@ GoProjects:
 
 # loading/reading the json file containing the ideas and their destinations
 def read_json():
-    with open("Data/idea.json", mode="r", encoding="utf-8") as read_file:
+    with open("/usr/local/bin/Pyidea/Data/idea.json", mode="r", encoding="utf-8") as read_file:
         return load(read_file)
 
 # writing to the json file containing the ideas and their destinations    
 def write_json(dict_to_json):
-    with open("Data/idea.json", mode="w", encoding="utf-8") as write_file:
+    with open("/usr/local/bin/Pyidea/Data/idea.json", mode="w", encoding="utf-8") as write_file:
         return dump(dict_to_json, write_file, indent=4)
     
 def check_if_exists(s_folder: str, idea_json: dict):
@@ -85,7 +85,11 @@ def add_idea(label: str, idea: str, link: str = ""):
 @app.command()
 def list_labels():
     ideas_json: dict = read_json()
-    labels = list(ideas_json.keys())     
+    labels = list(ideas_json.keys()) 
+
+    if len(labels) == 0:
+        print(Fore.RED + "There are no ideas yet to list use the 'add-idea' command to add an idea")
+        return
     
     for label in labels:
         check_if_exists(label, ideas_json) 
@@ -103,6 +107,10 @@ def list_labels():
 def remove_idea(label_name: str, idea_index: int):
     ideas_json: dict = read_json()
     labels = list(ideas_json.keys())
+
+    if len(labels) == 0:
+        print(Fore.RED + "There are no ideas yet to list use the 'add-idea' command to add an idea")
+        return
 
     for label in labels:
         check_if_exists(label, ideas_json)
@@ -136,6 +144,10 @@ def remove_idea(label_name: str, idea_index: int):
 def remove_label(label_name: str):
     ideas_json = read_json()
     labels = ideas_json.keys()
+
+    if len(labels) == 0:
+        print(Fore.RED + "There are no ideas yet to list use the 'add-idea' command to add an idea")
+        return
 
     for label in labels:
         if label_name.upper() == label:
