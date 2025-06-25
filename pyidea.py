@@ -94,7 +94,7 @@ def list_labels():
     for label in labels:
         check_if_exists(label, ideas_json) 
         ideas = list(ideas_json[label].keys()) 
-        print(Fore.BLACK + label + ":") 
+        print(Fore.YELLOW + label + ":") 
         for index, idea in enumerate(ideas):
             # we are getting the values (links) for each sub-folder and checking if its empty if it is 
             # we print something else other than it
