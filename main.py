@@ -75,8 +75,10 @@ def add_idea(sub_folder: str, idea: str, link: str = ""):
     # if there is a sub-folder and the user chose it we update it if not we create it
     if sub_folder.upper() in ideas_json.keys():
         ideas_json[sub_folder.upper()].update({ idea: link }) # we make the sub-folder uppercase don't ask me why its fun
+        print(Fore.GREEN + "the idea was added")
     else:
         ideas_json.update({ sub_folder.upper(): { idea: link } })
+        print(Fore.GREEN + "the idea and the sub-folder were added")
 
     write_json(ideas_json)
 
@@ -96,6 +98,41 @@ def list_sub_folders():
                 print(Fore.GREEN + f" {Fore.BLUE + ">>> " + str(index + 1)} - {Fore.GREEN + idea} - {Fore.CYAN + "link: " + list(ideas_json[sub_folder].values())[index]}")
             else:
                 print(Fore.GREEN + f" {Fore.BLUE + ">>> " + str(index + 1)} - {Fore.GREEN + idea} - {Fore.CYAN + "link: wasn't provided"}")
+
+@app.command()
+def remove_idea(sub_folder_name: str, idea_index: int):
+    ideas_json: dict = read_json()
+    sub_folders = list(ideas_json.keys())
+
+    for sub_folder in sub_folders:
+        check_if_exists(sub_folder, ideas_json)
+    
+    # for each folder we take its keys (ideas)
+    for sub_folder in sub_folders:
+        ideas = list(ideas_json[sub_folder].keys())
+        if sub_folder_name.upper() == sub_folder:
+            for index, idea in enumerate(ideas):
+                if idea_index - 1 == index: # we subract one because the value entered will be one indexed
+                    print(Fore.GREEN + f"{idea} is removed")
+                    ideas_json[sub_folder].pop(idea)
+                    # we check if there is no ideas left then we will remove the sub-folder because it is empty
+                    if len(list(ideas_json[sub_folder].keys())) == 0: 
+                        print(Fore.GREEN + f"{sub_folder} is removed")
+                        ideas_json.pop(sub_folder)
+                        
+                    write_json(ideas_json)
+                    return
+                # we then redo the loop because if we don't we could only remove the first one 
+                # because the first loop already ended so it won't repeat without putting this line
+                else:
+                    continue
+
+            print(Fore.RED + "the index you entered doesn't exist")
+            return
+            
+    print(Fore.RED + "the folder name you entered doesn't exist")
+    return
+        
 
 # run the file as a python binary not as typer's
 if __name__ == "__main__":
