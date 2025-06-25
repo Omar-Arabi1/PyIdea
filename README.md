@@ -70,4 +70,18 @@ this will remove an entire label and its contents as said
 ---
 
 ## setup:
-*will write it once I figure it out hehe*
+follow these steps to install this
+
+- clone the repo
+- create a virtual environment through `python3 -m venv .venv` and source it
+- install the requirements of the program inside requirements.txt through `pip3 install -r requirements.txt`
+- run `pyinstaller main.py -F` 
+- create a Pyidea directory and copy and past the Data directory and the file inside of it inside the newly
+created directory and also add the binary created to the directory without adding the dist directory made by
+pyinstaller
+- add this `export PATH=$PATH:/usr/local/bin/Pyidea`
+- run `source ~/.bashrc`
+
+---
+
+that is it you are ready to go!!!!!!!
